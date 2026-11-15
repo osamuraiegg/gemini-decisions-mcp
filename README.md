@@ -13,7 +13,7 @@ Traditional generative LLMs are suboptimal for routing, classification, complian
 `gemini-decision-1` acts as a **System One** decision engine:
 
 - **Zero Output Tokens (`output_tokens = 0`)**: Evaluates probabilities directly in a single forward pass with **$0 output token cost**.
-- **Ultra-Low Latency (~150–250 ms spec; ~180–400 ms from Japan)**: Measured at **186–218 ms median** in optimal Paid Tier 1 runs (typically **200–400 ms** depending on Google backend `gfet4t7` routing/load, with **~11 ms** local + edge RTT via HTTP keep-alive).
+- **Ultra-Low Latency (~150–250 ms spec; ~180–400 ms from Japan)**: Measured at **186–218 ms median** in optimal Paid Tier 1 runs (typically **200–400 ms** depending on Google backend routing/load, with **~11 ms** local + edge RTT via HTTP keep-alive).
 - **256K Shared Context (262,144 tokens)**: Feed entire source files, long PDF specs, or multi-file comparisons at once.
 - **Up to 1,000 Parallel Questions**: Evaluate `noul` (Yes/No), `choice` (2–255 options), and `score` (ordered rubric) simultaneously in one request.
 - **Full Multimodal Input with Strict MIME Dispatching**: Natively handles `.xlsx`, `.xls`, `.csv`, `.ods`, `.docx`, `.pptx`, `.pdf`, images, audio, and video without silent `application/octet-stream` degradation.
@@ -243,16 +243,16 @@ uv run python examples/04_ensemble_safety_gate.py
 | Japanese conversation / 3 questions | 30 | **186 ms** | 229 ms | 0 |
 | 2,573-token history / 3 questions | 20 | **218 ms** | 333 ms | 0 |
 
-### Keep-Alive & Server-Timing (`gfet4t7`) Breakdown
-To isolate local/network overhead from Google's backend processing, 10 consecutive warm calls + a 5-vs-5 keep-alive test were measured via `Server-Timing: gfet4t7`:
+### Keep-Alive & Server-Side Processing (`Server-Timing`) Breakdown
+To isolate local/network overhead from Google's backend processing, 10 consecutive warm calls + a 5-vs-5 keep-alive test were measured using Google Front End's HTTP `Server-Timing` header (metric token `gfet4t7`):
 
 | Metric | Min | Median | Max | Notes |
 | :--- | :---: | :---: | :---: | :--- |
 | **Network RTT + Local SDK** (Keep-Alive ON) | 10.2 ms | **11.3 ms** | 19.3 ms | Fresh TLS without keep-alive adds ~20–40 ms (`31.4–36.2 ms`) |
-| **Google Server-Side (`gfet4t7`)** | 238.0 ms | **371.5 ms** | 525.0 ms | Varies with Google backend routing & cluster load (~97% of total) |
+| **Google Server-Side (`Server-Timing`)** | 238.0 ms | **371.5 ms** | 525.0 ms | Varies with Google backend routing & cluster load (~97% of total) |
 | **End-to-End Total** (10 warm calls) | 322.1 ms | **384.8 ms** | 535.7 ms | Keep-Alive median `374.2 ms` vs Fresh Conn `383.4 ms` (5-call check) |
 
-- **Takeaway**: `DecisionsClient` caches `genai.Client` per API key so the connection stays warm (`~11 ms` network+local overhead) while the MCP server is running (closing the host app closes the stdio server cleanly). Any fluctuation between ~200 ms and ~400+ ms reflects Google's per-request backend routing/load (`gfet4t7`).
+- **Takeaway**: `DecisionsClient` caches `genai.Client` per API key so the connection stays warm (`~11 ms` network+local overhead) while the MCP server is running (closing the host app closes the stdio server cleanly). Any fluctuation between ~200 ms and ~400+ ms reflects Google's per-request backend routing and serving load (`Server-Timing` duration).
 
 ---
 

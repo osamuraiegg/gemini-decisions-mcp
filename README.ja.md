@@ -247,16 +247,16 @@ uv run python examples/04_ensemble_safety_gate.py
 | 日本語会話・3 判定 | 30 | **186 ms** | 229 ms | 0 |
 | 会話履歴 2,573 トークン・3 判定 | 20 | **218 ms** | 333 ms | 0 |
 
-### Keep-Alive と Google サーバー側 (`Server-Timing: gfet4t7`) の内訳実測
-ローカル/通信オーバーヘッドと Google バックエンド処理時間を切り分けるため、ウォーム連続 10 回および Keep-Alive 有無（各 5 回）を実測した結果です：
+### Keep-Alive と Google サーバー側処理時間（`Server-Timing`）の内訳実測
+ローカル/通信オーバーヘッドと Google バックエンド処理時間を切り分けるため、ウォーム連続 10 回および Keep-Alive 有無（各 5 回）を Google Front End の HTTP `Server-Timing` ヘッダ（計測指標名 `gfet4t7`）で比較・実測した結果です：
 
 | 計測項目 | 最小 | 中央値 | 最大 | 備考 |
 | :--- | :---: | :---: | :---: | :--- |
 | **通信 RTT + ローカル SDK** (Keep-Alive ON) | 10.2 ms | **11.3 ms** | 19.3 ms | 毎回切断すると TLS 再接続で `31.4〜36.2 ms` に増加 |
-| **Google サーバー側 (`gfet4t7`)** | 238.0 ms | **371.5 ms** | 525.0 ms | バックエンド経路・混雑度で変動（全体の約 97%） |
+| **Google サーバー側 (`Server-Timing`)** | 238.0 ms | **371.5 ms** | 525.0 ms | バックエンド経路・混雑度で変動（全体の約 97%） |
 | **全体 (`total` / ウォーム 10 回)** | 322.1 ms | **384.8 ms** | 535.7 ms | 5回比較では Keep-Alive 中央値 `374.2 ms` / 毎回切断 `383.4 ms` |
 
-- **ポイント**: `DecisionsClient` は API キー単位で `genai.Client` をキャッシュし、MCP サーバー稼働中（Antigravity 等を開いている間）は HTTP Keep-Alive により通信オーバーヘッドを **約 11 ms** に維持します（アプリ終了・MCP 再起動で自動切断）。全体の 200〜400 ms 帯の揺らぎは Google 側の 1 リクエストごとの振り分け・負荷（`gfet4t7`）によるものです。
+- **ポイント**: `DecisionsClient` は API キー単位で `genai.Client` をキャッシュし、MCP サーバー稼働中（Antigravity 等を開いている間）は HTTP Keep-Alive により通信オーバーヘッドを **約 11 ms** に維持します（アプリ終了・MCP 再起動で自動切断）。全体の 200〜400 ms 帯の揺らぎは Google 側の 1 リクエストごとの振り分け・負荷によるものです。
 
 ---
 

@@ -1,0 +1,70 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "gemini-decisions-mcp"
+version = "0.1.0"
+description = "MCP server and System One toolkit for Google Gemini Decisions API (gemini-decision-1) with strict multimodal MIME handling."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.11"
+authors = [
+  { name = "osamuraiegg" },
+]
+keywords = [
+  "mcp",
+  "gemini",
+  "gemini-decision-1",
+  "decisions-api",
+  "google-genai",
+  "multimodal",
+  "agent-skill",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+  "google-genai>=3.2.0",
+  "mcp>=2.0.0",
+]
+
+[project.optional-dependencies]
+examples = [
+  "openpyxl>=3.1.0",
+]
+dev = [
+  "openpyxl>=3.1.0",
+  "pytest>=8.0.0",
+  "pytest-asyncio>=0.24.0",
+  "ruff>=0.9.0",
+]
+
+[project.scripts]
+gemini-decisions-mcp = "gemini_decisions_mcp.server:main"
+
+[project.urls]
+Homepage = "https://github.com/osamuraiegg/gemini-decisions-mcp"
+Repository = "https://github.com/osamuraiegg/gemini-decisions-mcp"
+Issues = "https://github.com/osamuraiegg/gemini-decisions-mcp/issues"
+Documentation = "https://aistudio.google.com/docs/decisions-api"
+ModelSpec = "https://aistudio.google.com/docs/models/gemini-decision-1"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/gemini_decisions_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

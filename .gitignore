@@ -1,0 +1,42 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.installed.cfg
+*.egg
+build/
+dist/
+wheels/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Environment variables & secrets
+.env
+.env.*
+!.env.example
+
+# Testing & linting caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Local artifacts & generated fixtures
+artifacts/
+*.mp4
+*.log
+*.tsv
+*.jsonl
+*.xlsx
+!examples/fixtures/*
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

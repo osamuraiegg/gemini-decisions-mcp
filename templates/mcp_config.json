@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "gemini-decisions": {
+      "command": "uv",
+      "args": [
+        "run",
+        "--directory",
+        "/path/to/gemini-decisions-mcp",
+        "gemini-decisions-mcp"
+      ],
+      "env": {
+        "GEMINI_API_KEY": "${GEMINI_API_KEY}"
+      }
+    }
+  }
+}
